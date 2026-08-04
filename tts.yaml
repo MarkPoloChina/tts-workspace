@@ -1,0 +1,92 @@
+async_chunk: true
+
+connectors:
+  connector_of_shared_memory:
+    name: SharedMemoryConnector
+    extra:
+      shm_threshold_bytes: 65536
+      codec_streaming: true
+      connector_get_sleep_s: 0.01
+      connector_get_max_wait_first_chunk: 3000
+      connector_get_max_wait: 300
+      codec_chunk_frames: 25
+      codec_left_context_frames: 72
+      code_predictor_prefix_graphs: false
+      code_predictor_prefix_graph_buckets: [1, 2, 4, 8, 16, 32, 64]
+      code_predictor_prefix_graph_seq_lens: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+      ref_code_context_frames: 72
+      initial_codec_chunk_frames: 1
+      decode_cudagraph_capture_sizes: [25, 73, 97, 169, 325]
+      decode_cudagraph_batch_sizes: [1]
+      decode_compile_shapes: []
+      decode_batch_max_size: 8
+      decode_batch_bucket_frames: []
+      decode_enable_tf32: false
+
+      # Fixed-K mode keeps codebooks 0..7 and uses the distilled student for
+      # codebooks 8..15. Set this to "perceptual" to retain the prior
+      # entropy/confidence-based truncation behavior, or "none" for baseline.
+      code_predictor_truncation_mode: none
+      code_predictor_truncation_k: 8
+      code_predictor_early_exit_enabled: false
+      # code_predictor_early_exit_metric: entropy
+      # code_predictor_early_exit_min_keep: 8
+      # code_predictor_early_exit_entropy_threshold: 0.9
+      # code_predictor_early_exit_fill_strategy: distillation
+      # code_predictor_early_exit_prior_tokens: "0,0,0,0"
+      # code_predictor_distillation_state_size: 384
+      # code_predictor_distillation_weights: /home/x50058110/tts-aclg/distillation_output/qwen3_tts_rvq_tail.safetensors
+
+stages:
+  - stage_id: 0
+    max_num_seqs: 8
+    gpu_memory_utilization: 0.3
+    trust_remote_code: true
+    enable_prefix_caching: false
+    # async_scheduling: false
+    async_scheduling: true
+    max_num_batched_tokens: 512
+    max_model_len: 4096
+    devices: "0"
+    output_connectors:
+      to_stage_1: connector_of_shared_memory
+    default_sampling_params:
+      temperature: 0.9
+      top_k: 50
+      max_tokens: 4096
+      seed: 42
+      repetition_penalty: 1.05
+    subtalker_sampling_params:
+      do_sample: true
+      temperature: 0.9
+      top_k: 50
+      top_p: 1.0
+
+  - stage_id: 1
+    max_num_seqs: 8
+    gpu_memory_utilization: 0.3
+    # enforce_eager: true
+    enforce_eager: false
+    trust_remote_code: true
+    enable_prefix_caching: false
+    # async_scheduling: false
+    async_scheduling: true
+    max_num_batched_tokens: 65536
+    max_model_len: 65536
+    devices: "0"
+    input_connectors:
+      from_stage_0: connector_of_shared_memory
+    default_sampling_params:
+      temperature: 0.0
+      top_p: 1.0
+      top_k: -1
+      max_tokens: 65536
+      seed: 42
+      repetition_penalty: 1.0
+
+platforms:
+  npu:
+    stages:
+      - stage_id: 0
+        enforce_eager: false
+        # enforce_eager: true
