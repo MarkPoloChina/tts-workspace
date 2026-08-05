@@ -14,7 +14,6 @@ PYTHON_BIN="${PYTHON_BIN:-python}"
 MODEL_PATH="${MODEL_PATH:-${WORKSPACE_ROOT}/Qwen3-TTS-12Hz-1.7B-Base}"
 SEED_TTS_ROOT="${SEED_TTS_ROOT:-${WORKSPACE_ROOT}/seedtts_testset}"
 DISTILLATION_OUTPUT_DIR="${DISTILLATION_OUTPUT_DIR:-${WORKSPACE_ROOT}/distillation_output}"
-DISTILLATION_RUN_NAME="${DISTILLATION_RUN_NAME:-tail_distill}"
 TRAIN_DEVICE="${TRAIN_DEVICE:-npu:0}"
 TRAIN_DTYPE="${TRAIN_DTYPE:-bfloat16}"
 TRAIN_ATTN_IMPLEMENTATION="${TRAIN_ATTN_IMPLEMENTATION:-sdpa}"
@@ -53,7 +52,6 @@ exec "${PYTHON_BIN}" "${VLLM_OMNI_ROOT}/train_qwen3_tts_tail_distillation.py" \
   --model-path "${MODEL_PATH}" \
   --dataset-root "${SEED_TTS_ROOT}" \
   --output-dir "${DISTILLATION_OUTPUT_DIR}" \
-  --run-name "${DISTILLATION_RUN_NAME}" \
   --locales "${LOCALE_ARGS[@]}" \
   --device "${TRAIN_DEVICE}" \
   --dtype "${TRAIN_DTYPE}" \
