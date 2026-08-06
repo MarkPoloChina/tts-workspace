@@ -19,6 +19,8 @@ TRAIN_DTYPE="${TRAIN_DTYPE:-bfloat16}"
 TRAIN_ATTN_IMPLEMENTATION="${TRAIN_ATTN_IMPLEMENTATION:-sdpa}"
 TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-4096}"
 TRAIN_ROLLOUT_BATCH_SIZE="${TRAIN_ROLLOUT_BATCH_SIZE:-4}"
+TEACHER_TRACE_ACLGRAPH="${TEACHER_TRACE_ACLGRAPH:-true}"
+TEACHER_TRACE_ACLGRAPH_WARMUPS="${TEACHER_TRACE_ACLGRAPH_WARMUPS:-3}"
 TRAIN_STUDENT_DTYPE="${TRAIN_STUDENT_DTYPE:-float32}"
 TRAIN_TRACE_CACHE_DTYPE="${TRAIN_TRACE_CACHE_DTYPE:-bfloat16}"
 TRAIN_GRADIENT_ACCUMULATION_STEPS="${TRAIN_GRADIENT_ACCUMULATION_STEPS:-1}"
@@ -70,6 +72,11 @@ case "${ROLLOUT_NON_STREAMING_MODE}" in
   false|0|no|off) ROLLOUT_STREAMING_ARG="--no-rollout-non-streaming-mode" ;;
   *) echo "ROLLOUT_NON_STREAMING_MODE must be true or false." >&2; exit 2 ;;
 esac
+case "${TEACHER_TRACE_ACLGRAPH}" in
+  true|1|yes|on) TEACHER_TRACE_ACLGRAPH_ARG="--teacher-trace-aclgraph" ;;
+  false|0|no|off) TEACHER_TRACE_ACLGRAPH_ARG="--no-teacher-trace-aclgraph" ;;
+  *) echo "TEACHER_TRACE_ACLGRAPH must be true or false." >&2; exit 2 ;;
+esac
 
 export ASCEND_RT_VISIBLE_DEVICES
 export PYTHONPATH="${VLLM_OMNI_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
@@ -86,6 +93,8 @@ exec "${PYTHON_BIN}" "${VLLM_OMNI_ROOT}/train_qwen3_tts_tail_distillation.py" \
   --attn-implementation "${TRAIN_ATTN_IMPLEMENTATION}" \
   --batch-size "${TRAIN_BATCH_SIZE}" \
   --rollout-batch-size "${TRAIN_ROLLOUT_BATCH_SIZE}" \
+  "${TEACHER_TRACE_ACLGRAPH_ARG}" \
+  --teacher-trace-aclgraph-warmups "${TEACHER_TRACE_ACLGRAPH_WARMUPS}" \
   --gradient-accumulation-steps "${TRAIN_GRADIENT_ACCUMULATION_STEPS}" \
   --epochs "${TRAIN_EPOCHS}" \
   --learning-rate "${TRAIN_LEARNING_RATE}" \
