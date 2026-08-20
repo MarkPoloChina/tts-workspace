@@ -23,19 +23,9 @@ connectors:
       decode_batch_bucket_frames: []
       decode_enable_tf32: false
 
-      # Fixed-K mode keeps codebooks 0..7 and uses the distilled student for
-      # codebooks 8..15. Set this to "perceptual" to retain the prior
-      # entropy/confidence-based truncation behavior, or "none" for baseline.
-      code_predictor_truncation_mode: none
-      code_predictor_truncation_k: 8
-      code_predictor_early_exit_enabled: false
-      # code_predictor_early_exit_metric: entropy
-      # code_predictor_early_exit_min_keep: 8
-      # code_predictor_early_exit_entropy_threshold: 0.9
-      # code_predictor_early_exit_fill_strategy: distillation
-      # code_predictor_early_exit_prior_tokens: "0,0,0,0"
-      # code_predictor_distillation_state_size: 384
-      # code_predictor_distillation_weights: /home/x50058110/tts-aclg/distillation_output/qwen3_tts_rvq_tail.safetensors
+      # Uncomment and point to FlashGen artifact/rvq_tail.safetensors to enable
+      # RVQD. Leave absent for the full Code Predictor baseline.
+      # code_predictor_distillation_weights: /path/to/artifact/rvq_tail.safetensors
 
 stages:
   - stage_id: 0
@@ -57,9 +47,7 @@ stages:
       seed: 42
       repetition_penalty: 1.05
     subtalker_sampling_params:
-      # Must match the greedy Code Predictor rollout used by the default
-      # FlashGen RVQD ACL Graph training configuration.
-      do_sample: false
+      do_sample: true
       temperature: 0.9
       top_k: 50
       top_p: 1.0
