@@ -19,6 +19,9 @@ DISTILLATION_OUTPUT_DIR="${DISTILLATION_OUTPUT_DIR:-${WORKSPACE_ROOT}/distillati
 
 TRAIN_DEVICE="${TRAIN_DEVICE:-npu:0}"
 TRAIN_DTYPE="${TRAIN_DTYPE:-bfloat16}"
+TRAIN_ATTN_IMPLEMENTATION="${TRAIN_ATTN_IMPLEMENTATION:-sdpa}"
+TEACHER_TRACE_ACLGRAPH="${TEACHER_TRACE_ACLGRAPH:-true}"
+TEACHER_TRACE_ACLGRAPH_WARMUPS="${TEACHER_TRACE_ACLGRAPH_WARMUPS:-3}"
 TRAIN_STUDENT_DTYPE="${TRAIN_STUDENT_DTYPE:-float32}"
 TRAIN_TRACE_CACHE_DTYPE="${TRAIN_TRACE_CACHE_DTYPE:-bfloat16}"
 TRAIN_BATCH_SIZE="${TRAIN_BATCH_SIZE:-4096}"
@@ -28,6 +31,7 @@ TRAIN_EPOCHS="${TRAIN_EPOCHS:-5}"
 TRAIN_LEARNING_RATE="${TRAIN_LEARNING_RATE:-2e-4}"
 TRAIN_WEIGHT_DECAY="${TRAIN_WEIGHT_DECAY:-0.01}"
 TRAIN_MAX_GRAD_NORM="${TRAIN_MAX_GRAD_NORM:-1.0}"
+TRAIN_LOG_EVERY="${TRAIN_LOG_EVERY:-10}"
 
 DISTILLATION_TRUNCATION_K="${DISTILLATION_TRUNCATION_K:-8}"
 DISTILLATION_STATE_SIZE="${DISTILLATION_STATE_SIZE:-384}"
@@ -44,7 +48,7 @@ TRAIN_SEED="${TRAIN_SEED:-42}"
 
 # Code Predictor sampling. These values must match the vLLM-Omni service's
 # subtalker_sampling_params because the FlashGen plugin validates the contract.
-RVQD_DO_SAMPLE="${RVQD_DO_SAMPLE:-true}"
+RVQD_DO_SAMPLE="${RVQD_DO_SAMPLE:-false}"
 RVQD_TOP_K="${RVQD_TOP_K:-50}"
 RVQD_TOP_P="${RVQD_TOP_P:-1.0}"
 RVQD_TEMPERATURE="${RVQD_TEMPERATURE:-0.9}"
@@ -77,6 +81,9 @@ exec "${PYTHON_BIN}" "${FLASHGEN_ROOT}/train.py" rvqd \
   --models.teacher.init_from "${MODEL_PATH}" \
   --models.teacher.device "${TRAIN_DEVICE}" \
   --models.teacher.dtype "${TRAIN_DTYPE}" \
+  --models.teacher.attn_implementation "${TRAIN_ATTN_IMPLEMENTATION}" \
+  --models.teacher.trace_aclgraph "${TEACHER_TRACE_ACLGRAPH}" \
+  --models.teacher.trace_aclgraph_warmups "${TEACHER_TRACE_ACLGRAPH_WARMUPS}" \
   --method.truncation_k "${DISTILLATION_TRUNCATION_K}" \
   --method.state_size "${DISTILLATION_STATE_SIZE}" \
   --method.do_sample "${RVQD_DO_SAMPLE}" \
@@ -110,5 +117,6 @@ exec "${PYTHON_BIN}" "${FLASHGEN_ROOT}/train.py" rvqd \
   --training.loop.validation_batch_size "${VALIDATION_BATCH_SIZE}" \
   --training.loop.epochs "${TRAIN_EPOCHS}" \
   --training.loop.gradient_accumulation_steps "${TRAIN_GRADIENT_ACCUMULATION_STEPS}" \
+  --training.loop.log_every "${TRAIN_LOG_EVERY}" \
   --training.checkpoint.output_dir "${DISTILLATION_OUTPUT_DIR}" \
   "$@"

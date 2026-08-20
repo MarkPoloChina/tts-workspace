@@ -57,7 +57,9 @@ stages:
       seed: 42
       repetition_penalty: 1.05
     subtalker_sampling_params:
-      do_sample: true
+      # Must match the greedy Code Predictor rollout used by the default
+      # FlashGen RVQD ACL Graph training configuration.
+      do_sample: false
       temperature: 0.9
       top_k: 50
       top_p: 1.0
