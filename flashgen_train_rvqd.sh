@@ -19,7 +19,12 @@ python "${WORKSPACE_ROOT}/FlashGen/train.py" rvqd \
   --models.teacher.trace_aclgraph true \
   --models.teacher.trace_aclgraph_warmups 3 \
   --method.truncation_k 8 \
-  --method.state_size 384 \
+  --method.model_dim 512 \
+  --method.num_layers 4 \
+  --method.num_attention_heads 8 \
+  --method.intermediate_size 2048 \
+  --method.dropout 0.05 \
+  --method.rms_norm_eps 1e-6 \
   --method.do_sample false \
   --method.top_k 50 \
   --method.top_p 1.0 \
