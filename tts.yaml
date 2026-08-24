@@ -23,6 +23,9 @@ connectors:
       decode_batch_bucket_frames: []
       decode_enable_tf32: false
 
+      # Select v1 for a FlashGen v1.x GRU artifact or v2 for the current
+      # Transformer artifact. This field is ignored when weights are absent.
+      code_predictor_distillation_version: v2
       # Uncomment and point to FlashGen artifact/rvq_tail.safetensors to enable
       # RVQD. Leave absent for the full Code Predictor baseline.
       # code_predictor_distillation_weights: /path/to/artifact/rvq_tail.safetensors
