@@ -40,6 +40,9 @@ python "${WORKSPACE_ROOT}/FlashGen/train.py" rvqd \
   --method.ce_weight 1.0 \
   --method.kl_weight 1.0 \
   --method.hidden_weight 0.1 \
+  --method.code2wav_weight 0.1 \
+  --method.code2wav_temperature 1.0 \
+  --method.code2wav_top_k 4 \
   --training.student_dtype float32 \
   --training.data.seed_tts_root "${WORKSPACE_ROOT}/seedtts_testset" \
   --training.data.locales "[en, zh]" \
