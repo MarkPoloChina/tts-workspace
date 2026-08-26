@@ -2,7 +2,8 @@
 # Launch Qwen3-TTS RVQD training through FlashGen on Ascend.
 #
 # FlashGen and model/data directories are expected below WORKSPACE_ROOT.
-# Append dotted-key arguments to override the values below.
+# Append dotted-key arguments to override the values below. The default tail is
+# Transformer; append `--method.tail_model.type gru` to train the GRU instead.
 
 set -euo pipefail
 
@@ -19,12 +20,14 @@ python "${WORKSPACE_ROOT}/FlashGen/train.py" rvqd \
   --models.teacher.trace_aclgraph true \
   --models.teacher.trace_aclgraph_warmups 3 \
   --method.truncation_k 8 \
-  --method.model_dim 512 \
-  --method.num_layers 4 \
-  --method.num_attention_heads 8 \
-  --method.intermediate_size 2048 \
-  --method.dropout 0.05 \
-  --method.rms_norm_eps 1e-6 \
+  --method.tail_model.type transformer \
+  --method.tail_model.gru.state_size 384 \
+  --method.tail_model.transformer.model_dim 512 \
+  --method.tail_model.transformer.num_layers 4 \
+  --method.tail_model.transformer.num_attention_heads 8 \
+  --method.tail_model.transformer.intermediate_size 2048 \
+  --method.tail_model.transformer.dropout 0.05 \
+  --method.tail_model.transformer.rms_norm_eps 1e-6 \
   --method.do_sample false \
   --method.top_k 50 \
   --method.top_p 1.0 \

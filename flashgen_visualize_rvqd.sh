@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Render direct Qwen3-TTS Pad/RVQD/Full audio comparisons without vLLM-Omni.
+# The artifact manifest selects the GRU or Transformer tail automatically.
 # Usage: ./flashgen_visualize_rvqd.sh ARTIFACT_OR_WEIGHTS [extra arguments]
 
 set -euo pipefail

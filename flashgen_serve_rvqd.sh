@@ -4,8 +4,8 @@
 # Prerequisite: FlashGen must be installed in the same Python environment as
 # vLLM/vLLM-Omni so their plugin entry-point discovery can find flashgen_rvqd.
 # A non-empty code_predictor_distillation_weights value in tts.yaml enables
-# RVQD. code_predictor_distillation_version selects the v1 GRU or v2
-# Transformer runtime. Omitting weights starts the full Code Predictor.
+# RVQD. code_predictor_distillation_tail_model selects the gru or transformer
+# runtime. Omitting weights starts the full Code Predictor.
 
 set -euo pipefail
 
