@@ -13,9 +13,10 @@ python "${WORKSPACE_ROOT}/FlashGen/benchmark.py" rvqd-abtest \
   --port 18091 \
   --model "${WORKSPACE_ROOT}/Qwen3-TTS-12Hz-1.7B-Base" \
   --seed-tts-dataset-path "${WORKSPACE_ROOT}/seedtts_testset" \
-  --seed-tts-locale zh \
+  --seed-tts-locales zh,en \
   --num-prompts 50 \
   --concurrencies 1,4,8 \
+  --repetitions 1 \
   --num-warmups 2 \
   --seed 42 \
   --seed-tts-wer-eval 1 \
